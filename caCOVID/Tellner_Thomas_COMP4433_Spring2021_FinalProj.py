@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun  7 15:34:51 2021
+
+@author: telln
+"""
+
+import plotly.express as px
+import pandas as pd
+from urllib.request import urlopen
+import json
+
+#Read the CA COVID data into a dataframe
+df = pd.read_csv("cacovid19v3.csv", dtype={"fips":str})
+
+# Read in the county geojson data from which the CA counties will be drawn.
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response)
+
+
+#Build map using Plotly
+fig1 = px.choropleth(df, geojson=counties, locations='fips', color='casesper1000',
+                           color_continuous_scale="YlOrRd",
+                           range_color=(0, 171),
+                           animation_frame="date",
+                           hover_name="area"
+                          )
+fig1.update_geos(fitbounds="locations", visible=False)
+fig1.update_layout(title_text='California Cumulative COVID Cases Per 100K<br>April 1, 2020 - April 1, 2021')
+fig1.show()
+
